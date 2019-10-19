@@ -56,6 +56,7 @@ public class MainGUI extends JFrame {
 			e.printStackTrace();
 		}
 		
+		JFrame currentFrame = this;
 		final JTextPane textPane = new JTextPane();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -81,15 +82,26 @@ public class MainGUI extends JFrame {
 		mnFile.add(mntmSave);
 		
 		JMenuItem mntmSaveAs = new JMenuItem("Save As...");
+		mntmSaveAs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SaveOptions s = new SaveOptions(currentFrame);
+				s.setLocationRelativeTo(null);
+				s.setAutoRequestFocus(true);
+				s.setVisible(true);
+				currentFrame.setEnabled(false);
+			}
+		});
 		mnFile.add(mntmSaveAs);
 		
 		JSeparator separator = new JSeparator();
 		mnFile.add(separator);
 		
 		JMenuItem mntmPageSetup = new JMenuItem("Page Setup...");
+		mntmPageSetup.setEnabled(false);
 		mnFile.add(mntmPageSetup);
 		
 		JMenuItem mntmPrint = new JMenuItem("Print...");
+		mntmPrint.setEnabled(false);
 		mntmPrint.setAccelerator(KeyStroke.getKeyStroke('P', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
 		mnFile.add(mntmPrint);
 		
@@ -103,6 +115,7 @@ public class MainGUI extends JFrame {
 		menuBar.add(mnEdit);
 		
 		JMenuItem mntmUndo = new JMenuItem("Undo");
+		mntmUndo.setEnabled(false);
 		mntmUndo.setAccelerator(KeyStroke.getKeyStroke('Z', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
 		mnEdit.add(mntmUndo);
 		
@@ -110,18 +123,22 @@ public class MainGUI extends JFrame {
 		mnEdit.add(separator_2);
 		
 		JMenuItem mntmCut = new JMenuItem("Cut");
+		mntmCut.setEnabled(false);
 		mntmCut.setAccelerator(KeyStroke.getKeyStroke('X', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
 		mnEdit.add(mntmCut);
 		
 		JMenuItem mntmCopy = new JMenuItem("Copy");
+		mntmCopy.setEnabled(false);
 		mntmCopy.setAccelerator(KeyStroke.getKeyStroke('C', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
 		mnEdit.add(mntmCopy);
 		
 		JMenuItem mntmPaste = new JMenuItem("Paste");
+		mntmPaste.setEnabled(false);
 		mntmPaste.setAccelerator(KeyStroke.getKeyStroke('V', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
 		mnEdit.add(mntmPaste);
 		
 		JMenuItem mntmDelete = new JMenuItem("Delete");
+		mntmDelete.setEnabled(false);
 		mnEdit.add(mntmDelete);
 		
 		JSeparator separator_3 = new JSeparator();
@@ -139,6 +156,7 @@ public class MainGUI extends JFrame {
 		mnEdit.add(mntmReplace);
 		
 		JMenuItem mntmGoTo = new JMenuItem("Go To...");
+		mntmGoTo.setEnabled(false);
 		mntmGoTo.setAccelerator(KeyStroke.getKeyStroke('G', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
 		mnEdit.add(mntmGoTo);
 		
@@ -146,16 +164,19 @@ public class MainGUI extends JFrame {
 		mnEdit.add(separator_4);
 		
 		JMenuItem mntmSelectAll = new JMenuItem("Select All");
+		mntmSelectAll.setEnabled(false);
 		mntmSelectAll.setAccelerator(KeyStroke.getKeyStroke('A', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
 		mnEdit.add(mntmSelectAll);
 		
 		JMenuItem mntmTimedate = new JMenuItem("Time/Date");
+		mntmTimedate.setEnabled(false);
 		mnEdit.add(mntmTimedate);
 		
 		JMenu mnFormat = new JMenu("Format");
 		menuBar.add(mnFormat);
 		
 		JRadioButtonMenuItem rdbtnmntmWordWrap = new JRadioButtonMenuItem("Word Wrap");
+		rdbtnmntmWordWrap.setEnabled(false);
 		mnFormat.add(rdbtnmntmWordWrap);
 		
 		JMenuItem mntmFont = new JMenuItem("Font...");
@@ -170,15 +191,18 @@ public class MainGUI extends JFrame {
 		menuBar.add(mnView);
 		
 		JRadioButtonMenuItem rdbtnmntmStatusBar = new JRadioButtonMenuItem("Status Bar");
+		rdbtnmntmStatusBar.setEnabled(false);
 		mnView.add(rdbtnmntmStatusBar);
 		
 		JMenu mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);
 		
 		JMenuItem mntmViewHelp = new JMenuItem("View Help");
+		mntmViewHelp.setEnabled(false);
 		mnHelp.add(mntmViewHelp);
 		
 		JMenuItem mntmAboutObscurepad = new JMenuItem("About ObscurePad");
+		mntmAboutObscurepad.setEnabled(false);
 		mnHelp.add(mntmAboutObscurepad);
 		contentPane = new JPanel();
 		//contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
