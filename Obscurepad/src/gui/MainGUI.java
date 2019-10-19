@@ -116,13 +116,29 @@ public class MainGUI extends JFrame {
 				
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
 					File selectedFile = f.getSelectedFile();
-					System.out.println(selectedFile.getAbsolutePath());
+					
+					try {
+						if (FileIO.isFileEncrypted(selectedFile)) {
+							OpenOptions s = new OpenOptions(MainGUI.this, currentState, cipherTypes, cipherModes, selectedFile);
+							s.setLocationRelativeTo(null);
+							s.setAutoRequestFocus(true);
+							s.setVisible(true);
+							currentFrame.setEnabled(false);
+						} else {
+							String plaintext = FileIO.readFile(selectedFile.getAbsolutePath(), new Plaintext(), "");
+							currentState.setCurrentFile(selectedFile);
+							currentState.setEncType(new Plaintext());
+							currentState.setPassword("");
+							currentState.updateText(plaintext);
+						}
+					} catch (IOException e1) {
+						JOptionPane.showMessageDialog(currentFrame, 
+								"Error while opening \"" + selectedFile.getName() + "\"", 
+								"Error", 
+								JOptionPane.ERROR_MESSAGE);
+					}
 		
-					OpenOptions s = new OpenOptions(MainGUI.this, currentState, cipherTypes, cipherModes, selectedFile);
-					s.setLocationRelativeTo(null);
-					s.setAutoRequestFocus(true);
-					s.setVisible(true);
-					currentFrame.setEnabled(false);
+					
 				}
 			}
 		});
@@ -131,7 +147,7 @@ public class MainGUI extends JFrame {
 		JMenuItem mntmSave = new JMenuItem("Save");
 		mntmSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!currentState.getPassword().equals("")) {
+				if (!currentState.getPassword().equals("") || currentState.getEncType().getClass().equals(Plaintext.class)) { // If there is a saved password or if the encryption type is plaintext
 					try {
 						FileIO.saveFile(currentState.getCurrentFile().getAbsolutePath(), currentState.getEncType(), textPane.getText(), currentState.getPassword());
 					} catch (IOException e1) {

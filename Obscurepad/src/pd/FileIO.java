@@ -1,6 +1,7 @@
 package pd;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,16 +17,16 @@ import cipherTypes.CipherType;
 import cipherTypes.Plaintext;
 
 public class FileIO {
-	public static void saveFile(String fileName, CipherType encMode, String plaintext, String password) throws IOException {
-		if (!encMode.getClass().equals(Plaintext.class)) {
+	public static void saveFile(String fileName, CipherType cipher, String plaintext, String password) throws IOException {
+		if (!cipher.getClass().equals(Plaintext.class)) {
 			// Generate the IV
 			SecureRandom secureRandom = new SecureRandom();
-			byte[] iv = new byte[encMode.getIVSize()];
+			byte[] iv = new byte[cipher.getIVSize()];
 			secureRandom.nextBytes(iv);
-			encMode.setIv(iv);
+			cipher.setIv(iv);
 			
 			// Generate the key from the password
-			encMode.setKey(SHA256.hash(password));
+			cipher.setKey(SHA256.hash(password));
 			
 			
 			//Hash the plaintext and prepend to plaintext - used to verify the password is correct
@@ -42,19 +43,25 @@ public class FileIO {
 			// Encrypt the plaintext
 			byte[] ciphertext = null;
 			try {
-				ciphertext = encMode.encrypt(toEncrypt);
+				ciphertext = cipher.encrypt(toEncrypt);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
 			// Erase key from memory
-		    encMode.destroyKey();
+		    cipher.destroyKey();
 			
+		    
+		    String tag = "ENCRYPTED_WITH_OBSCUREPAD"; // Len 25
+		    
+		    
+		    
 			// Write IV, Ciphertext to the file
 		    FileOutputStream outputStream;
 			outputStream = new FileOutputStream(fileName);
-			outputStream.write(encMode.getIv());
+			outputStream.write(tag.getBytes());
+			outputStream.write(cipher.getIv());
 			outputStream.write(ciphertext);
 		    outputStream.close();
 		    
@@ -70,15 +77,19 @@ public class FileIO {
 		
 	}
 	
-	public static String readFile(String filename, CipherType encMode, String password) throws IOException {
+	public static String readFile(String filename, CipherType cipher, String password) throws IOException {
 		File file = new File(filename);
-		byte[] fileContent = Files.readAllBytes(file.toPath());
+		byte[] raw = Files.readAllBytes(file.toPath());
+		byte[] fileContent = new byte[raw.length - 25];
 		
-		if (!encMode.getClass().equals(Plaintext.class)) {
+		//Strip tag
+		System.arraycopy(raw, 25, fileContent, 0, fileContent.length);
+		
+		if (!cipher.getClass().equals(Plaintext.class)) {
 			//Get IV from file -> iv
-			byte[] iv = new byte[encMode.getIVSize()];
+			byte[] iv = new byte[cipher.getIVSize()];
 			System.arraycopy(fileContent, 0, iv, 0, iv.length);
-			encMode.setIv(iv);
+			cipher.setIv(iv);
 			
 			//Get cipherText from file -> cipherText
 			byte[] cipherText = new byte[fileContent.length - iv.length];
@@ -86,19 +97,19 @@ public class FileIO {
 			
 			
 			// Generate the key from the password
-			encMode.setKey(SHA256.hash(password));
+			cipher.setKey(SHA256.hash(password));
 			
 			//Decrypt the ciphertext -> plainText
 			byte[] plainText = null;
 			try {
-				plainText = encMode.decrypt(cipherText);
+				plainText = cipher.decrypt(cipherText);
 			} catch (Exception e) {
 				System.out.println("decrypting error");
 				return null;
 			}
 			
 			// Erase key from memory
-		    encMode.destroyKey();
+		    cipher.destroyKey();
 	
 			
 			//Check if the hash of the plaintext matches the one stored in the file
@@ -126,7 +137,18 @@ public class FileIO {
 			return new String(originalText);
 		} else {
 			// read unencrypted
-			return new String(fileContent);
+			return new String(raw);
 		}
+	}
+	
+	public static boolean isFileEncrypted(File file) throws IOException {
+		byte fileContent[] = new byte[25];
+
+		FileInputStream fin = new FileInputStream(file);
+	    fin.read(fileContent);
+	    String s = new String(fileContent);
+	    
+	    
+		return (s.equals("ENCRYPTED_WITH_OBSCUREPAD"));
 	}
 }
