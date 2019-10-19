@@ -14,6 +14,7 @@ import cipherTypes.CipherType;
 import cipherTypes.Plaintext;
 import pd.FileIO;
 import pd.SHA256;
+import pd.CurrentState;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
@@ -37,7 +38,7 @@ public class OpenOptions extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 
 
-	public OpenOptions(MainGUI parentFrame, ArrayList<CipherType> cipherTypes, ArrayList<String> cipherModes, File selectedFile) {
+	public OpenOptions(MainGUI parentFrame, CurrentState currentState, ArrayList<CipherType> cipherTypes, ArrayList<String> cipherModes, File selectedFile) {
 		JDialog currentFrame = this;
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -77,7 +78,6 @@ public class OpenOptions extends JDialog {
 		
 		// Cache password checkbox
 		JCheckBox chckbxCachePasswordFor = new JCheckBox("Cache password for this session");
-		chckbxCachePasswordFor.setEnabled(false);
 		chckbxCachePasswordFor.setBounds(6, 105, 238, 23);
 		contentPanel.add(chckbxCachePasswordFor);
 		
@@ -143,7 +143,7 @@ public class OpenOptions extends JDialog {
 						
 						String plaintext;
 						try {
-							plaintext = FileIO.readFile(selectedFile.getAbsolutePath(), type);
+							plaintext = FileIO.readFile(selectedFile.getAbsolutePath(), type, new String (passwordField.getPassword()));
 							
 							if (plaintext == null) {
 								JOptionPane.showMessageDialog(currentFrame, 
@@ -155,12 +155,15 @@ public class OpenOptions extends JDialog {
 								parentFrame.setEnabled(true);
 								parentFrame.toFront();
 								
-								//update stuff
-								parentFrame.updateText(plaintext);
-								parentFrame.updateTitle(selectedFile.getName());
-								//update cached password if applicable
-								//parentFrame.updateCachedPassword(password);
-								System.out.println(plaintext);
+								//Update the program state
+								currentState.updateText(plaintext);
+								currentState.setCurrentFile(selectedFile);
+								if (chckbxCachePasswordFor.isSelected()) {
+									currentState.setPassword(new String (passwordField.getPassword()));
+								} else {
+									currentState.setPassword("");
+								}
+							
 							}
 						} catch (IOException e1) {
 							JOptionPane.showMessageDialog(currentFrame, 

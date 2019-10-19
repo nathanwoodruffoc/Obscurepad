@@ -18,9 +18,13 @@ import cipherTypes.Plaintext;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import net.miginfocom.swing.MigLayout;
+import pd.CurrentState;
+import pd.FileIO;
+
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
@@ -28,6 +32,7 @@ import javax.swing.JScrollPane;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -38,17 +43,17 @@ public class MainGUI extends JFrame {
 	private JPanel contentPane;
 	private JTextPane textPane;
 
-	public void updateTitle(String title) {
-		this.setTitle(title + " - Obscurepad");
-	}
-	
-	public void updateText(String text) {
-		textPane.setText(text);
-	}
-	
-	public void updateCachedPassword(String password) {
-		
-	}
+//	public void updateTitle(String title) {
+//		this.setTitle(title + " - Obscurepad");
+//	}
+//	
+//	public void updateText(String text) {
+//		textPane.setText(text);
+//	}
+//	
+//	public void updateCachedPassword(String password) {
+//		
+//	}
 
 	/**
 	 * Create the frame.
@@ -78,6 +83,7 @@ public class MainGUI extends JFrame {
 		
 		MainGUI currentFrame = this;
 		textPane = new JTextPane();
+		CurrentState currentState = new CurrentState(this, textPane);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 662, 464);
@@ -92,9 +98,10 @@ public class MainGUI extends JFrame {
 		JMenuItem mntmNew = new JMenuItem("New");
 		mntmNew.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				updateTitle("Untitled");
-				updateText("");
-				updateCachedPassword("");
+				currentState.setCurrentFile(null);
+				currentState.setEncType(null);
+				currentState.updateText("");
+				currentState.setPassword("");
 			}
 		});
 		mntmNew.setAccelerator(KeyStroke.getKeyStroke('N', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
@@ -111,7 +118,7 @@ public class MainGUI extends JFrame {
 					File selectedFile = f.getSelectedFile();
 					System.out.println(selectedFile.getAbsolutePath());
 		
-					OpenOptions s = new OpenOptions(MainGUI.this, cipherTypes, cipherModes, selectedFile);
+					OpenOptions s = new OpenOptions(MainGUI.this, currentState, cipherTypes, cipherModes, selectedFile);
 					s.setLocationRelativeTo(null);
 					s.setAutoRequestFocus(true);
 					s.setVisible(true);
@@ -122,14 +129,33 @@ public class MainGUI extends JFrame {
 		mnFile.add(mntmOpen);
 		
 		JMenuItem mntmSave = new JMenuItem("Save");
-		mntmSave.setEnabled(false);
+		mntmSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!currentState.getPassword().equals("")) {
+					try {
+						FileIO.saveFile(currentState.getCurrentFile().getAbsolutePath(), currentState.getEncType(), textPane.getText(), currentState.getPassword());
+					} catch (IOException e1) {
+						JOptionPane.showMessageDialog(currentFrame, 
+								"Error while writing to \"" + currentState.getCurrentFile().getName() + "\"", 
+								"Error", 
+								JOptionPane.ERROR_MESSAGE);
+					}
+				} else {
+					SaveOptions s = new SaveOptions(currentFrame, currentState, cipherTypes, cipherModes, textPane.getText());
+					s.setLocationRelativeTo(null);
+					s.setAutoRequestFocus(true);
+					s.setVisible(true);
+					currentFrame.setEnabled(false);
+				}
+			}
+		});
 		mntmSave.setAccelerator(KeyStroke.getKeyStroke('S', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
 		mnFile.add(mntmSave);
 		
 		JMenuItem mntmSaveAs = new JMenuItem("Save As...");
 		mntmSaveAs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SaveOptions s = new SaveOptions(currentFrame, cipherTypes, cipherModes, textPane.getText());
+				SaveOptions s = new SaveOptions(currentFrame, currentState, cipherTypes, cipherModes, textPane.getText());
 				s.setLocationRelativeTo(null);
 				s.setAutoRequestFocus(true);
 				s.setVisible(true);

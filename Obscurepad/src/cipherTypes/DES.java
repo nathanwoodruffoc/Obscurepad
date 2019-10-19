@@ -3,6 +3,7 @@ package cipherTypes;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.security.auth.DestroyFailedException;
 
 public class DES extends CipherType {
 	private SecretKeySpec key;
@@ -39,6 +40,17 @@ public class DES extends CipherType {
         cipher.init(Cipher.DECRYPT_MODE,key,iv);
         return cipher.doFinal(cipherText);
     }
+    
+    public void destroyKey() {
+    	try {
+			this.key.destroy();
+		} catch (DestroyFailedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    
 
     public byte[] getKey() {
         return key.getEncoded();

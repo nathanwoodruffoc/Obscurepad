@@ -72,4 +72,10 @@ public class Plaintext extends CipherType {
 		
 	}
 
+	@Override
+	public void destroyKey() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

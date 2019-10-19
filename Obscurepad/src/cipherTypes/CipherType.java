@@ -8,6 +8,7 @@ public abstract class CipherType {
 	public abstract int getIVSize();
 	public abstract byte[] encrypt(byte[] plainText) throws Exception;
 	public abstract byte[] decrypt(byte[] cipherText) throws Exception;
+	public abstract void destroyKey();
 	public abstract String toString();
     
 	public abstract byte[] getKey();

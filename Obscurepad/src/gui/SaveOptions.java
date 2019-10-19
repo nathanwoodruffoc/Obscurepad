@@ -14,6 +14,7 @@ import cipherTypes.CipherType;
 import cipherTypes.Plaintext;
 import pd.FileIO;
 import pd.SHA256;
+import pd.CurrentState;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
@@ -35,7 +36,7 @@ public class SaveOptions extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 
 
-	public SaveOptions(JFrame parentFrame, ArrayList<CipherType> cipherTypes, ArrayList<String> cipherModes, String plainText) {
+	public SaveOptions(MainGUI parentFrame, CurrentState currentState, ArrayList<CipherType> cipherTypes, ArrayList<String> cipherModes, String plainText) {
 		JDialog currentFrame = this;
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -71,14 +72,16 @@ public class SaveOptions extends JDialog {
 		// Password Field
 		JPasswordField passwordField = new JPasswordField();
 		passwordField.setBounds(109, 77, 135, 20);
-		contentPanel.add(passwordField);
 		passwordField.setColumns(10);
+		passwordField.setText(currentState.getPassword());
+		contentPanel.add(passwordField);
+		
 		
 		
 		// Cache password checkbox
 		JCheckBox chckbxCachePasswordFor = new JCheckBox("Cache password for this session");
-		chckbxCachePasswordFor.setEnabled(false);
 		chckbxCachePasswordFor.setBounds(6, 105, 238, 23);
+		chckbxCachePasswordFor.setSelected(!currentState.getPassword().equals(""));
 		contentPanel.add(chckbxCachePasswordFor);
 		
 		
@@ -88,11 +91,18 @@ public class SaveOptions extends JDialog {
 		for (String s : cipherModes) {
 			comboBoxModes.addItem(s);
 		}
+		
+		if (currentState.getEncType() != null) {
+			comboBoxModes.setSelectedItem(currentState.getEncType().getCipherMode());
+		}
 		contentPanel.add(comboBoxModes);
 		
 				
 		// Cipher types comboBox
 		JComboBox<CipherType> comboBoxTypes = new JComboBox<CipherType>();
+		if (currentState.getEncType() != null) {
+			comboBoxTypes.setSelectedItem(currentState.getEncType());
+		}
 		comboBoxTypes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (comboBoxTypes.getSelectedItem().getClass().equals(Plaintext.class)) {
@@ -127,40 +137,54 @@ public class SaveOptions extends JDialog {
 				JButton okButton = new JButton("OK");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						JFileChooser f = new JFileChooser();
-						currentFrame.setVisible(false);
-						int returnValue = f.showSaveDialog(parentFrame);
-						
-						if (returnValue == JFileChooser.APPROVE_OPTION) {
-							File selectedFile = f.getSelectedFile();
-							System.out.println(selectedFile.getAbsolutePath());
-							currentFrame.dispose();
-							parentFrame.setEnabled(true);
-							parentFrame.toFront();
-							
-							
-							
-							CipherType type = (CipherType) comboBoxTypes.getSelectedItem();
-							String password = new String(passwordField.getPassword());
-							type.setCipherMode((String) comboBoxModes.getSelectedItem());
-							
-							try {
-								FileIO.saveFile(selectedFile.getAbsolutePath(), type, plainText, password);
-							} catch (IOException e1) {
-								JOptionPane.showMessageDialog(currentFrame, 
-										"Error while writing to \"" + selectedFile.getName() + "\"", 
-										"Error", 
-										JOptionPane.ERROR_MESSAGE);
-							}
-
-							
-							
+						if (passwordField.isVisible() && passwordField.getPassword().length == 0) {
+							JOptionPane.showMessageDialog(currentFrame, 
+									"Password cannot be blank.", 
+									"Error", 
+									JOptionPane.ERROR_MESSAGE);
 						} else {
-							currentFrame.setVisible(true);
-							parentFrame.toFront();
-							currentFrame.toFront();
+							JFileChooser f = new JFileChooser();
+							currentFrame.setVisible(false);
+							int returnValue = f.showSaveDialog(parentFrame);
+							
+							if (returnValue == JFileChooser.APPROVE_OPTION) {
+								File selectedFile = f.getSelectedFile();
+								System.out.println(selectedFile.getAbsolutePath());
+								currentFrame.dispose();
+								parentFrame.setEnabled(true);
+								parentFrame.toFront();
+								
+								
+								
+								CipherType type = (CipherType) comboBoxTypes.getSelectedItem();
+								String password = new String(passwordField.getPassword());
+								type.setCipherMode((String) comboBoxModes.getSelectedItem());
+								
+								try {
+									FileIO.saveFile(selectedFile.getAbsolutePath(), type, plainText, password);
+									
+									currentState.setCurrentFile(selectedFile);
+									if (chckbxCachePasswordFor.isSelected()) {
+										currentState.setPassword(new String (passwordField.getPassword()));
+									} else {
+										currentState.setPassword("");
+									}
+									currentState.setEncType(type);
+								} catch (IOException e1) {
+									JOptionPane.showMessageDialog(currentFrame, 
+											"Error while writing to \"" + selectedFile.getName() + "\"", 
+											"Error", 
+											JOptionPane.ERROR_MESSAGE);
+								}
+
+								
+								
+							} else {
+								currentFrame.setVisible(true);
+								parentFrame.toFront();
+								currentFrame.toFront();
+							}
 						}
-						
 					}
 				});
 				okButton.setActionCommand("OK");

@@ -35,8 +35,8 @@ public class FileIO {
 			System.arraycopy(beginningHash, 0, toEncrypt, 0, beginningHash.length);
 			System.arraycopy(pt, 0, toEncrypt, beginningHash.length, pt.length);
 			
-			System.out.println("Hashing: " + ByteConv.toHex(pt));
-			System.out.println("Saving pt hash:" + ByteConv.toHex(beginningHash));
+			//System.out.println("Hashing: " + ByteConv.toHex(pt));
+			//System.out.println("Saving pt hash:" + ByteConv.toHex(beginningHash));
 			
 			
 			// Encrypt the plaintext
@@ -48,7 +48,8 @@ public class FileIO {
 				e.printStackTrace();
 			}
 			
-			
+			// Erase key from memory
+		    encMode.destroyKey();
 			
 			// Write IV, Ciphertext to the file
 		    FileOutputStream outputStream;
@@ -56,6 +57,8 @@ public class FileIO {
 			outputStream.write(encMode.getIv());
 			outputStream.write(ciphertext);
 		    outputStream.close();
+		    
+		    
 		} else {
 			//write unencrypted
 			FileOutputStream outputStream;
@@ -67,7 +70,7 @@ public class FileIO {
 		
 	}
 	
-	public static String readFile(String filename, CipherType encMode) throws IOException {
+	public static String readFile(String filename, CipherType encMode, String password) throws IOException {
 		File file = new File(filename);
 		byte[] fileContent = Files.readAllBytes(file.toPath());
 		
@@ -82,6 +85,9 @@ public class FileIO {
 			System.arraycopy(fileContent, iv.length, cipherText, 0, cipherText.length);
 			
 			
+			// Generate the key from the password
+			encMode.setKey(SHA256.hash(password));
+			
 			//Decrypt the ciphertext -> plainText
 			byte[] plainText = null;
 			try {
@@ -90,6 +96,9 @@ public class FileIO {
 				System.out.println("decrypting error");
 				return null;
 			}
+			
+			// Erase key from memory
+		    encMode.destroyKey();
 	
 			
 			//Check if the hash of the plaintext matches the one stored in the file
@@ -97,8 +106,8 @@ public class FileIO {
 			System.arraycopy(plainText, 32, beginning, 0, beginning.length);
 			
 			byte[] beginningHash = SHA256.hash(new String(beginning, StandardCharsets.UTF_8));
-			System.out.println("Hashing: " + ByteConv.toHex(beginning));
-			System.out.println("Opening pt hash:" + ByteConv.toHex(beginningHash));
+			//System.out.println("Hashing: " + ByteConv.toHex(beginning));
+			//System.out.println("Opening pt hash:" + ByteConv.toHex(beginningHash));
 			
 			byte[] beginningHashInFile = new byte[32];
 			System.arraycopy(plainText, 0, beginningHashInFile, 0, beginningHashInFile.length);

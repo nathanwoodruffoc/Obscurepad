@@ -10,6 +10,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.security.auth.DestroyFailedException;
 
 public class AES extends CipherType {
     private SecretKeySpec key;
@@ -39,7 +40,7 @@ public class AES extends CipherType {
 	}
 	
 	public AES(byte[] key, byte[] iv, String cipherMode) {
-        this.key= new SecretKeySpec(key,ALGORITHM);
+        this.key = new SecretKeySpec(key,ALGORITHM);
         this.iv = new IvParameterSpec(iv);
         this.cipherMode = cipherMode;
     }
@@ -64,6 +65,14 @@ public class AES extends CipherType {
         cipher.init(Cipher.DECRYPT_MODE,key,iv);
         return cipher.doFinal(cipherText);
     }
+    
+    public void destroyKey() {
+    	this.key = null;
+
+    }
+    
+    
+    
 
     public byte[] getKey() {
         return key.getEncoded();
