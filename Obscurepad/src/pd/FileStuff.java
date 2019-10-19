@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
 
@@ -45,6 +46,23 @@ public class FileStuff {
 		
 		//encrypt plaintext
 		//write IV and ciphertext to file
+		
+		OutputStream os = null;
+		try {
+			os = new FileOutputStream(fileName);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			os.write(encMode.getIv());
+			os.write(ciphertext);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	public static String readFile(String filename, CipherType encMode) throws Exception {

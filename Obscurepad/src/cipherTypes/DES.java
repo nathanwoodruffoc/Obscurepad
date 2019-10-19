@@ -55,4 +55,11 @@ public class DES extends CipherType {
     public void setIv(byte[] iv) {
     	this.iv = new IvParameterSpec(iv);
     }
+    
+	public String getCipherMode() {
+		return cipherMode;
+	}
+	public void setCipherMode(String cipherMode) {
+		this.cipherMode = cipherMode;
+	}
 }

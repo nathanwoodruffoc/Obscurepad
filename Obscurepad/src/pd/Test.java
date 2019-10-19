@@ -10,7 +10,7 @@ public class Test {
 		byte[] message="A much longer message!!!!!   A much longer message!!!!!".getBytes();
 		
 		// Hash the password
-		String password = "This is a string";
+		String password = "password";
 		byte[] key = SHA256.hash(password);
 		
 		// Generate the IV
@@ -36,8 +36,8 @@ public class Test {
 		
 		//write to file
 		//read from file and display
-		String fileName = "C:\\epic.txt";
-		FileStuff.saveFile(fileName, (CipherType) aes, new String(message));
+		String fileName = "C:\\stuff.txt";
+		//FileStuff.saveFile(fileName, (CipherType) aes, new String(message));
 		
 		try {
 			String result = FileStuff.readFile(fileName, (CipherType) aes);

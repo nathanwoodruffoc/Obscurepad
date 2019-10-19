@@ -9,6 +9,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import cipherTypes.CipherType;
+import cipherTypes.Plaintext;
+import pd.FileStuff;
+import pd.SHA256;
+
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
@@ -17,6 +23,8 @@ import javax.swing.JPasswordField;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -41,7 +49,7 @@ public class SaveOptions extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public SaveOptions(JFrame parentFrame) {
+	public SaveOptions(JFrame parentFrame, ArrayList<CipherType> cipherTypes, ArrayList<String> cipherModes, String plainText) {
 		
 		JDialog currentFrame = this;
 		addWindowListener(new WindowAdapter() {
@@ -56,24 +64,46 @@ public class SaveOptions extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
-		{
-			JComboBox comboBox = new JComboBox();
-			comboBox.setBounds(109, 11, 135, 22);
-			contentPanel.add(comboBox);
+		
+		
+		
+		
+		
+		JComboBox<CipherType> comboBox = new JComboBox<CipherType>();
+		comboBox.setBounds(109, 11, 135, 22);
+		
+		for (CipherType c : cipherTypes) {
+			comboBox.addItem(c);
 		}
-		{
-			textField = new JPasswordField();
-			textField.setBounds(109, 44, 135, 20);
-			contentPanel.add(textField);
-			textField.setColumns(10);
+		contentPanel.add(comboBox);
+		
+		JComboBox<String> comboBox_1 = new JComboBox<String>();
+		comboBox_1.setBounds(109, 44, 135, 22);
+		for (String s : cipherModes) {
+			comboBox_1.addItem(s);
 		}
+		contentPanel.add(comboBox_1);
+		
+		
+		
+		
+		
+		textField = new JPasswordField();
+		textField.setBounds(109, 77, 135, 20);
+		contentPanel.add(textField);
+		textField.setColumns(10);
+		
+		
+		
+		
+		
 		
 		JLabel lblEncryptionType = new JLabel("Encryption Type:");
 		lblEncryptionType.setBounds(10, 15, 89, 14);
 		contentPanel.add(lblEncryptionType);
 		
 		JLabel lblPassword = new JLabel("Password:");
-		lblPassword.setBounds(10, 47, 89, 14);
+		lblPassword.setBounds(10, 80, 89, 14);
 		contentPanel.add(lblPassword);
 		
 		JCheckBox chckbxCachePasswordFor = new JCheckBox("Cache password for this session");
@@ -81,8 +111,14 @@ public class SaveOptions extends JDialog {
 		contentPanel.add(chckbxCachePasswordFor);
 		
 		JLabel lblStrength = new JLabel("Strength:");
-		lblStrength.setBounds(254, 47, 112, 14);
+		lblStrength.setBounds(254, 80, 112, 14);
 		contentPanel.add(lblStrength);
+		
+		JLabel lblEncryptionMode = new JLabel("Encryption Mode:");
+		lblEncryptionMode.setBounds(10, 47, 103, 14);
+		contentPanel.add(lblEncryptionMode);
+		
+		
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -103,9 +139,27 @@ public class SaveOptions extends JDialog {
 							parentFrame.toFront();
 							
 							
+							if (!comboBox.getSelectedItem().getClass().equals(Plaintext.class)) {
+								//generate new iv, key
+								byte[] key = SHA256.hash(new String(textField.getPassword()));
+								
+								// Generate the IV
+								SecureRandom secureRandom = new SecureRandom();
+								byte[] iv = new byte[16];
+								secureRandom.nextBytes(iv);
+								
+								CipherType type = (CipherType) comboBox.getSelectedItem();
+								type.setIv(iv);
+								type.setKey(key);
+								type.setCipherMode((String) comboBox_1.getSelectedItem());
+								
+								FileStuff.saveFile(selectedFile.getAbsolutePath(), type, plainText);
+								
+								
+							} else {
+								//write unencrypted
+							}
 							
-							//save file
-								//
 							
 						} else {
 							currentFrame.setVisible(true);

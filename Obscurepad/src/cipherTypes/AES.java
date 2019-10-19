@@ -20,8 +20,17 @@ public class AES extends CipherType {
     
     
 
+    public AES() {
+    	
+    }
 
-
+	public String getCipherMode() {
+		return cipherMode;
+	}
+	public void setCipherMode(String cipherMode) {
+		this.cipherMode = cipherMode;
+	}
+	
 	public AES(byte[] key, byte[] iv, String cipherMode) {
         this.key= new SecretKeySpec(key,ALGORITHM);
         this.iv = new IvParameterSpec(iv);

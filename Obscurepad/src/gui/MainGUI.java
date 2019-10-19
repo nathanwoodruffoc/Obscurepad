@@ -10,6 +10,10 @@ import javax.swing.border.EmptyBorder;
 
 import org.drjekyll.fontchooser.FontDialog;
 
+import cipherTypes.AES;
+import cipherTypes.CipherType;
+import cipherTypes.Plaintext;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -22,6 +26,7 @@ import javax.swing.UIManager;
 import javax.swing.JScrollPane;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.ScrollPaneConstants;
@@ -30,21 +35,21 @@ public class MainGUI extends JFrame {
 
 	private JPanel contentPane;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					MainGUI frame = new MainGUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	/**
+//	 * Launch the application.
+//	 */
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					MainGUI frame = new MainGUI();
+//					frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the frame.
@@ -55,6 +60,22 @@ public class MainGUI extends JFrame {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		
+		
+		
+		
+		
+		ArrayList<CipherType> cipherTypes = new ArrayList<CipherType>();
+		cipherTypes.add(new AES());
+		cipherTypes.add(new Plaintext());
+		
+		ArrayList<String> cipherModes = new ArrayList<String>();
+		cipherModes.add("CBC");
+		cipherModes.add("CTR");
+		
+		
+		
 		
 		JFrame currentFrame = this;
 		final JTextPane textPane = new JTextPane();
@@ -84,7 +105,7 @@ public class MainGUI extends JFrame {
 		JMenuItem mntmSaveAs = new JMenuItem("Save As...");
 		mntmSaveAs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SaveOptions s = new SaveOptions(currentFrame);
+				SaveOptions s = new SaveOptions(currentFrame, cipherTypes, cipherModes, textPane.getText());
 				s.setLocationRelativeTo(null);
 				s.setAutoRequestFocus(true);
 				s.setVisible(true);
