@@ -1,6 +1,13 @@
 package cipherTypes;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -37,10 +44,19 @@ public class AES extends CipherType {
         this.cipherMode = cipherMode;
     }
 
-    public byte[] encrypt(byte[] plainText) throws Exception {
-        Cipher cipher=Cipher.getInstance("AES/" + cipherMode + "/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE,key,iv);
-        return cipher.doFinal(plainText);
+    public byte[] encrypt(byte[] plainText) throws BadPaddingException {
+        Cipher cipher;
+		try {
+			cipher = Cipher.getInstance("AES/" + cipherMode + "/PKCS5Padding");
+			cipher.init(Cipher.ENCRYPT_MODE,key,iv);
+	        return cipher.doFinal(plainText);
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException e) {
+			// TODO Auto-generated catch block
+			// Never happens
+			e.printStackTrace();
+		}
+		return null;
+        
     }
     
     public byte[] decrypt(byte[] cipherText) throws Exception {
