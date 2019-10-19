@@ -57,26 +57,15 @@ public class MainGUI extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @param cipherModes 
+	 * @param cipherTypes 
 	 */
-	public MainGUI() {
+	public MainGUI(ArrayList<CipherType> cipherTypes, ArrayList<String> cipherModes) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
-		
-		
-		
-		
-		ArrayList<CipherType> cipherTypes = new ArrayList<CipherType>();
-		cipherTypes.add(new AES());
-		cipherTypes.add(new Plaintext());
-		
-		ArrayList<String> cipherModes = new ArrayList<String>();
-		cipherModes.add("CBC");
-		cipherModes.add("CTR");
 		
 		
 		
@@ -101,7 +90,7 @@ public class MainGUI extends JFrame {
 				currentState.setCurrentFile(null);
 				currentState.setEncType(null);
 				currentState.updateText("");
-				currentState.setPassword("");
+				currentState.setPassword(null);
 			}
 		});
 		mntmNew.setAccelerator(KeyStroke.getKeyStroke('N', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
@@ -125,10 +114,10 @@ public class MainGUI extends JFrame {
 							s.setVisible(true);
 							currentFrame.setEnabled(false);
 						} else {
-							String plaintext = FileIO.readFile(selectedFile.getAbsolutePath(), new Plaintext(), "");
+							String plaintext = FileIO.readFile(selectedFile.getAbsolutePath(), new Plaintext(), null);
 							currentState.setCurrentFile(selectedFile);
 							currentState.setEncType(new Plaintext());
-							currentState.setPassword("");
+							currentState.setPassword(null);
 							currentState.updateText(plaintext);
 						}
 					} catch (IOException e1) {
@@ -147,7 +136,7 @@ public class MainGUI extends JFrame {
 		JMenuItem mntmSave = new JMenuItem("Save");
 		mntmSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!currentState.getPassword().equals("") || currentState.getEncType().getClass().equals(Plaintext.class)) { // If there is a saved password or if the encryption type is plaintext
+				if (currentState.getPassword() != null || currentState.getEncType().getClass().equals(Plaintext.class)) { // If there is a saved password or if the encryption type is plaintext
 					try {
 						FileIO.saveFile(currentState.getCurrentFile().getAbsolutePath(), currentState.getEncType(), textPane.getText(), currentState.getPassword());
 					} catch (IOException e1) {

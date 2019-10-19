@@ -12,7 +12,7 @@ public class CurrentState {
 	private JFrame programGUI;
 	private JTextPane mainText;
 	
-	private String password;
+	private char[] password;
 	private CipherType encType;
 	private File currentFile;
 	
@@ -21,18 +21,18 @@ public class CurrentState {
 		this.programGUI = programGUI;
 		this.mainText = mainText;
 		
-		this.password = "";
+		this.password = null;
 		this.encType = null;
 		this.currentFile = null;
 	}
 	
 	
 	
-	public String getPassword() {
+	public char[] getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(char[] password) {
 		this.password = password;
 	}
 

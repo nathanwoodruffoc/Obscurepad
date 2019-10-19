@@ -139,14 +139,13 @@ public class OpenOptions extends JDialog {
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						//generate key
-						byte[] key = SHA256.hash(new String(passwordField.getPassword()));
 						CipherType type = (CipherType) comboBoxTypes.getSelectedItem();
-						type.setKey(key);
+						type.deriveKey(passwordField.getPassword());
 						type.setCipherMode((String) comboBoxModes.getSelectedItem());
 						
 						String plaintext;
 						try {
-							plaintext = FileIO.readFile(selectedFile.getAbsolutePath(), type, new String (passwordField.getPassword()));
+							plaintext = FileIO.readFile(selectedFile.getAbsolutePath(), type, passwordField.getPassword());
 							
 							if (plaintext == null) {
 								JOptionPane.showMessageDialog(currentFrame, 
@@ -162,9 +161,9 @@ public class OpenOptions extends JDialog {
 								currentState.updateText(plaintext);
 								currentState.setCurrentFile(selectedFile);
 								if (chckbxCachePasswordFor.isSelected()) {
-									currentState.setPassword(new String (passwordField.getPassword()));
+									currentState.setPassword(passwordField.getPassword());
 								} else {
-									currentState.setPassword("");
+									currentState.setPassword(null);
 								}
 							
 							}
@@ -197,6 +196,6 @@ public class OpenOptions extends JDialog {
 		
 		// Focus the password field   
 		this.pack();
-		System.out.println(passwordField.requestFocusInWindow());
+		passwordField.requestFocusInWindow();
 	}
 }

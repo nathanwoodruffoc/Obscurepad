@@ -1,16 +1,25 @@
 package cipherTypes;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.DestroyFailedException;
+
+import pd.ByteConv;
 
 public class DES extends CipherType {
 	private SecretKeySpec key;
     private IvParameterSpec iv;
     private String cipherMode;
     
-    private int keySize = 7;
+    private int keySize = 8;
     private int IVSize = 8;
     private String name = "DES";
     public int getKeySize() { return keySize;	}
@@ -21,7 +30,7 @@ public class DES extends CipherType {
     
     
 
-
+    public DES() { }
 
 	public DES(byte[] key, byte[] iv, String cipherMode) {
         this.key= new SecretKeySpec(key,ALGORITHM);
@@ -42,12 +51,7 @@ public class DES extends CipherType {
     }
     
     public void destroyKey() {
-    	try {
-			this.key.destroy();
-		} catch (DestroyFailedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	this.key = null;
     }
     
     
@@ -59,6 +63,25 @@ public class DES extends CipherType {
     public void setKey(byte[] key) {
     	this.key= new SecretKeySpec(key,ALGORITHM);
     }
+    
+    public void deriveKey(char[] password) {
+    	byte[] salt = "1234".getBytes();
+    	int iterations = 10000;
+    	try {
+    		int keyLength = 8 * this.keySize;
+            SecretKeyFactory skf = SecretKeyFactory.getInstance( "PBKDF2WithHmacSHA512" );
+            PBEKeySpec spec = new PBEKeySpec( password, salt, iterations, keyLength);
+            SecretKey key = skf.generateSecret( spec );
+
+            setKey(key.getEncoded());
+            
+           
+            
+        } catch ( NoSuchAlgorithmException | InvalidKeySpecException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+    
 
     public byte[] getIv() {
         return iv.getIV();

@@ -17,16 +17,13 @@ import cipherTypes.CipherType;
 import cipherTypes.Plaintext;
 
 public class FileIO {
-	public static void saveFile(String fileName, CipherType cipher, String plaintext, String password) throws IOException {
+	public static void saveFile(String fileName, CipherType cipher, String plaintext, char[] password) throws IOException {
 		if (!cipher.getClass().equals(Plaintext.class)) {
-			// Generate the IV
-			SecureRandom secureRandom = new SecureRandom();
-			byte[] iv = new byte[cipher.getIVSize()];
-			secureRandom.nextBytes(iv);
-			cipher.setIv(iv);
+
 			
 			// Generate the key from the password
-			cipher.setKey(SHA256.hash(password));
+			cipher.deriveKey(password);
+			cipher.genIv();
 			
 			
 			//Hash the plaintext and prepend to plaintext - used to verify the password is correct
@@ -77,7 +74,7 @@ public class FileIO {
 		
 	}
 	
-	public static String readFile(String filename, CipherType cipher, String password) throws IOException {
+	public static String readFile(String filename, CipherType cipher, char[] password) throws IOException {
 		File file = new File(filename);
 		byte[] raw = Files.readAllBytes(file.toPath());
 		byte[] fileContent = new byte[raw.length - 25];
@@ -97,7 +94,7 @@ public class FileIO {
 			
 			
 			// Generate the key from the password
-			cipher.setKey(SHA256.hash(password));
+			cipher.deriveKey(password);
 			
 			//Decrypt the ciphertext -> plainText
 			byte[] plainText = null;

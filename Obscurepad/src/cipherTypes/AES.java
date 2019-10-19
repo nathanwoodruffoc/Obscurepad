@@ -3,6 +3,7 @@ package cipherTypes;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -11,6 +12,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.DestroyFailedException;
+
+import pd.SHA256;
 
 public class AES extends CipherType {
     private SecretKeySpec key;
@@ -80,6 +83,11 @@ public class AES extends CipherType {
 
     public void setKey(byte[] key) {
     	this.key= new SecretKeySpec(key,ALGORITHM);
+    }
+    
+    public void deriveKey(char[] password) {
+    	byte[] key = SHA256.hash(new String(password));
+    	setKey(key);
     }
 
     public byte[] getIv() {

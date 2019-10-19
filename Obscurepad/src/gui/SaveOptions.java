@@ -61,7 +61,9 @@ public class SaveOptions extends JDialog {
 		JPasswordField passwordField = new JPasswordField();
 		passwordField.setBounds(109, 77, 135, 20);
 		passwordField.setColumns(10);
-		passwordField.setText(currentState.getPassword());
+		if (currentState.getPassword() != null) {
+			passwordField.setText(new String(currentState.getPassword()));
+		}
 		contentPanel.add(passwordField);
 		
 		
@@ -88,7 +90,7 @@ public class SaveOptions extends JDialog {
 		// Cache password checkbox
 		JCheckBox chckbxCachePasswordFor = new JCheckBox("Cache password for this session");
 		chckbxCachePasswordFor.setBounds(6, 105, 238, 23);
-		chckbxCachePasswordFor.setSelected(!currentState.getPassword().equals(""));
+		chckbxCachePasswordFor.setSelected(currentState.getPassword() != null);
 		
 		contentPanel.add(chckbxCachePasswordFor);
 		
@@ -165,17 +167,16 @@ public class SaveOptions extends JDialog {
 								
 								
 								CipherType type = (CipherType) comboBoxTypes.getSelectedItem();
-								String password = new String(passwordField.getPassword());
 								type.setCipherMode((String) comboBoxModes.getSelectedItem());
 								
 								try {
-									FileIO.saveFile(selectedFile.getAbsolutePath(), type, plainText, password);
+									FileIO.saveFile(selectedFile.getAbsolutePath(), type, plainText, passwordField.getPassword());
 									
 									currentState.setCurrentFile(selectedFile);
 									if (chckbxCachePasswordFor.isSelected()) {
-										currentState.setPassword(new String (passwordField.getPassword()));
+										currentState.setPassword(passwordField.getPassword());
 									} else {
-										currentState.setPassword("");
+										currentState.setPassword(null);
 									}
 									currentState.setEncType(type);
 								} catch (IOException e1) {
@@ -216,7 +217,7 @@ public class SaveOptions extends JDialog {
 		
 		// Focus the password field   
 		this.pack();
-		System.out.println(passwordField.requestFocusInWindow());
+		passwordField.requestFocusInWindow();
 		
 		
 	}

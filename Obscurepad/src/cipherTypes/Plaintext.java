@@ -78,4 +78,10 @@ public class Plaintext extends CipherType {
 		
 	}
 
+	@Override
+	public void deriveKey(char[] password) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
