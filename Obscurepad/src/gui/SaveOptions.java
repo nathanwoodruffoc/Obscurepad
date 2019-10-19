@@ -110,9 +110,6 @@ public class SaveOptions extends JDialog {
 				
 		// Cipher types comboBox
 		JComboBox<CipherType> comboBoxTypes = new JComboBox<CipherType>();
-		if (currentState.getEncType() != null) {
-			comboBoxTypes.setSelectedItem(currentState.getEncType());
-		}
 		comboBoxTypes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (comboBoxTypes.getSelectedItem().getClass().equals(Plaintext.class)) {
@@ -135,6 +132,11 @@ public class SaveOptions extends JDialog {
 		for (CipherType c : cipherTypes) {
 			comboBoxTypes.addItem(c);
 		}
+		
+		if (currentState.getEncType() != null) {
+			comboBoxTypes.setSelectedItem(currentState.getEncType());
+		}
+		
 		contentPanel.add(comboBoxTypes);
 		
 		

@@ -160,6 +160,7 @@ public class OpenOptions extends JDialog {
 								//Update the program state
 								currentState.updateText(plaintext);
 								currentState.setCurrentFile(selectedFile);
+								currentState.setEncType(type);
 								if (chckbxCachePasswordFor.isSelected()) {
 									currentState.setPassword(passwordField.getPassword());
 								} else {

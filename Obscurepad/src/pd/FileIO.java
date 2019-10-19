@@ -76,12 +76,14 @@ public class FileIO {
 	public static String readFile(String filename, CipherType cipher, char[] password) throws IOException {
 		File file = new File(filename);
 		byte[] raw = Files.readAllBytes(file.toPath());
-		byte[] fileContent = new byte[raw.length - 25];
 		
-		//Strip tag
-		System.arraycopy(raw, 25, fileContent, 0, fileContent.length);
 		
 		if (!cipher.getClass().equals(Plaintext.class)) {
+			//Strip tag
+			byte[] fileContent = new byte[raw.length - 25];
+			System.arraycopy(raw, 25, fileContent, 0, fileContent.length);
+			
+			
 			//Get IV from file -> iv
 			byte[] iv = new byte[cipher.getIVSize()];
 			System.arraycopy(fileContent, 0, iv, 0, iv.length);
@@ -138,12 +140,13 @@ public class FileIO {
 	}
 	
 	public static boolean isFileEncrypted(File file) throws IOException {
-		byte fileContent[] = new byte[25];
-
 		FileInputStream fin = new FileInputStream(file);
-	    fin.read(fileContent);
-	    String s = new String(fileContent);
+		
+		byte fileContent[] = new byte[25];
+		fin.read(fileContent);
+		fin.close();
 	    
+		String s = new String(fileContent);
 	    
 		return (s.equals("ENCRYPTED_WITH_OBSCUREPAD"));
 	}
