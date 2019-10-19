@@ -71,7 +71,6 @@ public class AES extends CipherType {
     
     public void destroyKey() {
     	this.key = null;
-
     }
     
     

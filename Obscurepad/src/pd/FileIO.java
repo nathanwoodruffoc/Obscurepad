@@ -19,18 +19,17 @@ import cipherTypes.Plaintext;
 public class FileIO {
 	public static void saveFile(String fileName, CipherType cipher, String plaintext, char[] password) throws IOException {
 		if (!cipher.getClass().equals(Plaintext.class)) {
-
-			
-			// Generate the key from the password
+			// Generate the key and IV
 			cipher.deriveKey(password);
 			cipher.genIv();
 			
 			
 			//Hash the plaintext and prepend to plaintext - used to verify the password is correct
 			byte[] pt = plaintext.getBytes(StandardCharsets.UTF_8);
+			
 			byte[] beginningHash = SHA256.hash(new String(pt));
 			byte[] toEncrypt = new byte[pt.length + beginningHash.length];
-			System.arraycopy(beginningHash, 0, toEncrypt, 0, beginningHash.length);
+			System.arraycopy(beginningHash, 0, toEncrypt, 0, beginningHash.length); //
 			System.arraycopy(pt, 0, toEncrypt, beginningHash.length, pt.length);
 			
 			//System.out.println("Hashing: " + ByteConv.toHex(pt));

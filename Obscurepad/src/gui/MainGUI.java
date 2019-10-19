@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -33,6 +35,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -67,8 +70,13 @@ public class MainGUI extends JFrame {
 			e.printStackTrace();
 		}
 		
+//		ImageIcon img = new ImageIcon("img/obscurepad2.png");
+//		setIconImage(img.getImage());
 		
+		URL url = this.getClass().getResource("/obscurepad2.png");
+	    setIconImage(Toolkit.getDefaultToolkit().getImage(url));
 		
+
 		
 		MainGUI currentFrame = this;
 		textPane = new JTextPane();
