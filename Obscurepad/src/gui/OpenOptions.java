@@ -18,6 +18,7 @@ import pd.SHA256;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JCheckBox;
 import javax.swing.JPasswordField;
 import java.awt.event.WindowAdapter;
@@ -33,22 +34,7 @@ public class OpenOptions extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JPasswordField textField;
 
-//	/**
-//	 * Launch the application.
-//	 */
-//	public static void main(String[] args) {
-//		try {
-//			SaveOptions dialog = new SaveOptions();
-//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//			dialog.setVisible(true);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
 
-	/**
-	 * Create the dialog.
-	 */
 	public OpenOptions(MainGUI parentFrame, ArrayList<CipherType> cipherTypes, ArrayList<String> cipherModes, File selectedFile) {
 		
 		JDialog currentFrame = this;
@@ -69,6 +55,7 @@ public class OpenOptions extends JDialog {
 		
 		
 		
+		// Cipher types comboBox
 		JComboBox<CipherType> comboBox = new JComboBox<CipherType>();
 		comboBox.setBounds(109, 11, 135, 22);
 		
@@ -77,6 +64,8 @@ public class OpenOptions extends JDialog {
 		}
 		contentPanel.add(comboBox);
 		
+		
+		// Cipher Modes comboBox
 		JComboBox<String> comboBox_1 = new JComboBox<String>();
 		comboBox_1.setBounds(109, 44, 135, 22);
 		for (String s : cipherModes) {
@@ -85,9 +74,7 @@ public class OpenOptions extends JDialog {
 		contentPanel.add(comboBox_1);
 		
 		
-		
-		
-		
+		// Password Field
 		textField = new JPasswordField();
 		textField.setBounds(109, 77, 135, 20);
 		contentPanel.add(textField);
@@ -95,27 +82,16 @@ public class OpenOptions extends JDialog {
 		
 		
 		
-		
-		
-		
-		JLabel lblEncryptionType = new JLabel("Encryption Type:");
-		lblEncryptionType.setBounds(10, 15, 89, 14);
-		contentPanel.add(lblEncryptionType);
-		
-		JLabel lblPassword = new JLabel("Password:");
-		lblPassword.setBounds(10, 80, 89, 14);
-		contentPanel.add(lblPassword);
-		
 		JCheckBox chckbxCachePasswordFor = new JCheckBox("Cache password for this session");
 		chckbxCachePasswordFor.setEnabled(false);
 		chckbxCachePasswordFor.setBounds(6, 105, 238, 23);
 		contentPanel.add(chckbxCachePasswordFor);
 		
-		JLabel lblEncryptionMode = new JLabel("Encryption Mode:");
-		lblEncryptionMode.setBounds(10, 47, 103, 14);
-		contentPanel.add(lblEncryptionMode);
 		
 		
+		
+		
+		// OK, Cancel buttons
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -136,6 +112,12 @@ public class OpenOptions extends JDialog {
 								//disable current frame
 								//display wrong password dialog
 								//enable current frame
+
+								JOptionPane.showMessageDialog(currentFrame, 
+										"Incorrect password or encryption type.", 
+										"Unable to decrypt", 
+										JOptionPane.ERROR_MESSAGE);
+								
 							} else {
 								// delete current frame
 								currentFrame.dispose();
@@ -177,5 +159,19 @@ public class OpenOptions extends JDialog {
 				buttonPane.add(cancelButton);
 			}
 		}
+		
+		
+		// Labels
+		JLabel lblEncryptionType = new JLabel("Encryption Type:");
+		lblEncryptionType.setBounds(10, 15, 89, 14);
+		contentPanel.add(lblEncryptionType);
+		
+		JLabel lblPassword = new JLabel("Password:");
+		lblPassword.setBounds(10, 80, 89, 14);
+		contentPanel.add(lblPassword);
+		
+		JLabel lblEncryptionMode = new JLabel("Encryption Mode:");
+		lblEncryptionMode.setBounds(10, 47, 103, 14);
+		contentPanel.add(lblEncryptionMode);
 	}
 }

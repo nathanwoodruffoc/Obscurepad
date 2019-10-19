@@ -14,10 +14,10 @@ import cipherTypes.CipherType;
 
 public class FileIO {
 	public static void saveFile(String fileName, CipherType encMode, String plaintext) {
-		//hash the first 256bits of plaintext and prepend to plaintext
-		char[] beginning = new char[32];
-		plaintext.getChars(0, 32, beginning, 0);
-		String beginningHash = new String(SHA256.hash(new String(beginning)));
+		//hash the plaintext and prepend to plaintext
+		//char[] beginning = new char[32];
+		//plaintext.getChars(0, 32, beginning, 0);
+		String beginningHash = new String(SHA256.hash(plaintext));
 		
 		String toEncrypt = beginningHash + plaintext;
 		//System.out.println("Hashing: \"" + new String(beginning) + "\"");
@@ -77,42 +77,35 @@ public class FileIO {
 			e.printStackTrace();
 		}
 		
-		//Get IV from file
+		//Get IV from file -> iv
 		byte[] iv = new byte[encMode.getIVSize()];
 		System.arraycopy(fileContent, 0, iv, 0, iv.length);
 		encMode.setIv(iv);
 		
-		//Get ciphertext from file
+		//Get cipherText from file -> cipherText
 		byte[] cipherText = new byte[fileContent.length - iv.length];
 		System.arraycopy(fileContent, iv.length, cipherText, 0, cipherText.length);
 		
 		
-		//Decrypt the ciphertext
+		//Decrypt the ciphertext -> plainText
 		byte[] plainText = null;
 		try {
 			plainText = encMode.decrypt(cipherText);
-		} catch (BadPaddingException e) {
-			return null;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return null;
 		}
-		//System.out.println(new String(plainText));
 
 		
-		//check if the hash of the first 32 bytes of the plaintext matches the one stored in the file
-		byte[] beginning = new byte[32];
+		//Check if the hash of the plaintext matches the one stored in the file
+		byte[] beginning = new byte[plainText.length - 32];
 		System.arraycopy(plainText, 32, beginning, 0, beginning.length);
+		
 		byte[] beginningHash = SHA256.hash(new String(beginning));
-		//System.out.println("Hashing: \"" + new String(beginning) + "\"");
 		
 		byte[] beginningHashInFile = new byte[32];
 		System.arraycopy(plainText, 0, beginningHashInFile, 0, beginningHashInFile.length);
 		
-		if (Arrays.equals(beginningHashInFile, beginningHash)) {
-			System.out.println("File hash matches");
-		} else {
-			System.out.println("File hash doesn't match");
+		if (!Arrays.equals(beginningHashInFile, beginningHash)) {
 			return null;
 		}
 		

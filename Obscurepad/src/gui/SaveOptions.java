@@ -33,22 +33,7 @@ public class SaveOptions extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JPasswordField textField;
 
-//	/**
-//	 * Launch the application.
-//	 */
-//	public static void main(String[] args) {
-//		try {
-//			SaveOptions dialog = new SaveOptions();
-//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//			dialog.setVisible(true);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
 
-	/**
-	 * Create the dialog.
-	 */
 	public SaveOptions(JFrame parentFrame, ArrayList<CipherType> cipherTypes, ArrayList<String> cipherModes, String plainText) {
 		
 		JDialog currentFrame = this;
@@ -68,7 +53,7 @@ public class SaveOptions extends JDialog {
 		
 		
 		
-		
+		// Cipher types comboBox
 		JComboBox<CipherType> comboBox = new JComboBox<CipherType>();
 		comboBox.setBounds(109, 11, 135, 22);
 		
@@ -77,6 +62,8 @@ public class SaveOptions extends JDialog {
 		}
 		contentPanel.add(comboBox);
 		
+		
+		// Cipher Modes comboBox
 		JComboBox<String> comboBox_1 = new JComboBox<String>();
 		comboBox_1.setBounds(109, 44, 135, 22);
 		for (String s : cipherModes) {
@@ -85,41 +72,20 @@ public class SaveOptions extends JDialog {
 		contentPanel.add(comboBox_1);
 		
 		
-		
-		
-		
+		// Password Field
 		textField = new JPasswordField();
 		textField.setBounds(109, 77, 135, 20);
 		contentPanel.add(textField);
 		textField.setColumns(10);
 		
 		
-		
-		
-		
-		
-		JLabel lblEncryptionType = new JLabel("Encryption Type:");
-		lblEncryptionType.setBounds(10, 15, 89, 14);
-		contentPanel.add(lblEncryptionType);
-		
-		JLabel lblPassword = new JLabel("Password:");
-		lblPassword.setBounds(10, 80, 89, 14);
-		contentPanel.add(lblPassword);
-		
 		JCheckBox chckbxCachePasswordFor = new JCheckBox("Cache password for this session");
 		chckbxCachePasswordFor.setEnabled(false);
 		chckbxCachePasswordFor.setBounds(6, 105, 238, 23);
 		contentPanel.add(chckbxCachePasswordFor);
 		
-		JLabel lblStrength = new JLabel("Strength:");
-		lblStrength.setBounds(254, 80, 112, 14);
-		contentPanel.add(lblStrength);
 		
-		JLabel lblEncryptionMode = new JLabel("Encryption Mode:");
-		lblEncryptionMode.setBounds(10, 47, 103, 14);
-		contentPanel.add(lblEncryptionMode);
-		
-		
+		// OK, Cancel buttons
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -189,8 +155,26 @@ public class SaveOptions extends JDialog {
 		}
 		
 		
-		//this.pack();                   //Realize the components.
-		//textField.requestFocusInWindow();  //This button will have the initial focus.
-		//frame.setVisible(true);         //Display the window.
+		// Labels
+		JLabel lblEncryptionType = new JLabel("Encryption Type:");
+		lblEncryptionType.setBounds(10, 15, 89, 14);
+		contentPanel.add(lblEncryptionType);
+		
+		JLabel lblPassword = new JLabel("Password:");
+		lblPassword.setBounds(10, 80, 89, 14);
+		contentPanel.add(lblPassword);
+		
+		JLabel lblStrength = new JLabel("Strength:");
+		lblStrength.setBounds(254, 80, 112, 14);
+		contentPanel.add(lblStrength);
+		
+		JLabel lblEncryptionMode = new JLabel("Encryption Mode:");
+		lblEncryptionMode.setBounds(10, 47, 103, 14);
+		contentPanel.add(lblEncryptionMode);
+		
+		
+		// Focus the password field
+		//this.pack();              
+		//textField.requestFocusInWindow();
 	}
 }
