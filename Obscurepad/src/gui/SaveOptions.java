@@ -30,6 +30,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Dimension;
 
 public class SaveOptions extends JDialog {
 
@@ -37,6 +38,7 @@ public class SaveOptions extends JDialog {
 
 
 	public SaveOptions(MainGUI parentFrame, CurrentState currentState, ArrayList<CipherType> cipherTypes, ArrayList<String> cipherModes, String plainText) {
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		JDialog currentFrame = this;
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -46,11 +48,24 @@ public class SaveOptions extends JDialog {
 		});
 		setResizable(false);
 		setTitle("Save Options");
-		setBounds(100, 100, 396, 196);
+		setBounds(100, 100, 281, 257);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setPreferredSize(new Dimension(255, 140));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		
+		
+		
+		// Password Field
+		JPasswordField passwordField = new JPasswordField();
+		passwordField.setBounds(109, 77, 135, 20);
+		passwordField.setColumns(10);
+		passwordField.setText(currentState.getPassword());
+		contentPanel.add(passwordField);
+		
+		
+		
 		
 		
 		
@@ -69,19 +84,12 @@ public class SaveOptions extends JDialog {
 		contentPanel.add(lblEncryptionMode);
 		
 		
-		// Password Field
-		JPasswordField passwordField = new JPasswordField();
-		passwordField.setBounds(109, 77, 135, 20);
-		passwordField.setColumns(10);
-		passwordField.setText(currentState.getPassword());
-		contentPanel.add(passwordField);
-		
-		
 		
 		// Cache password checkbox
 		JCheckBox chckbxCachePasswordFor = new JCheckBox("Cache password for this session");
 		chckbxCachePasswordFor.setBounds(6, 105, 238, 23);
 		chckbxCachePasswordFor.setSelected(!currentState.getPassword().equals(""));
+		
 		contentPanel.add(chckbxCachePasswordFor);
 		
 		
@@ -206,8 +214,10 @@ public class SaveOptions extends JDialog {
 		}
 		
 		
-		// Focus the password field
-		//this.pack();              
-		//textField.requestFocusInWindow();
+		// Focus the password field   
+		this.pack();
+		System.out.println(passwordField.requestFocusInWindow());
+		
+		
 	}
 }

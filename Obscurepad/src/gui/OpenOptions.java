@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
@@ -39,6 +40,7 @@ public class OpenOptions extends JDialog {
 
 
 	public OpenOptions(MainGUI parentFrame, CurrentState currentState, ArrayList<CipherType> cipherTypes, ArrayList<String> cipherModes, File selectedFile) {
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		JDialog currentFrame = this;
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -48,11 +50,12 @@ public class OpenOptions extends JDialog {
 		});
 		setResizable(false);
 		setTitle("Open Options");
-		setBounds(100, 100, 262, 196);
+		setBounds(100, 100, 281, 257);
 		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setPreferredSize(new Dimension(255, 140));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		
 		
 		// Labels
@@ -192,6 +195,8 @@ public class OpenOptions extends JDialog {
 		}
 		
 		
-		
+		// Focus the password field   
+		this.pack();
+		System.out.println(passwordField.requestFocusInWindow());
 	}
 }
