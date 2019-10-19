@@ -12,7 +12,7 @@ import javax.swing.border.EmptyBorder;
 
 import cipherTypes.CipherType;
 import cipherTypes.Plaintext;
-import pd.FileStuff;
+import pd.FileIO;
 import pd.SHA256;
 
 import javax.swing.JComboBox;
@@ -107,7 +107,8 @@ public class SaveOptions extends JDialog {
 		contentPanel.add(lblPassword);
 		
 		JCheckBox chckbxCachePasswordFor = new JCheckBox("Cache password for this session");
-		chckbxCachePasswordFor.setBounds(10, 105, 238, 23);
+		chckbxCachePasswordFor.setEnabled(false);
+		chckbxCachePasswordFor.setBounds(6, 105, 238, 23);
 		contentPanel.add(chckbxCachePasswordFor);
 		
 		JLabel lblStrength = new JLabel("Strength:");
@@ -153,7 +154,7 @@ public class SaveOptions extends JDialog {
 								type.setKey(key);
 								type.setCipherMode((String) comboBox_1.getSelectedItem());
 								
-								FileStuff.saveFile(selectedFile.getAbsolutePath(), type, plainText);
+								FileIO.saveFile(selectedFile.getAbsolutePath(), type, plainText);
 								
 								
 							} else {
@@ -186,5 +187,10 @@ public class SaveOptions extends JDialog {
 				buttonPane.add(cancelButton);
 			}
 		}
+		
+		
+		//this.pack();                   //Realize the components.
+		//textField.requestFocusInWindow();  //This button will have the initial focus.
+		//frame.setVisible(true);         //Display the window.
 	}
 }

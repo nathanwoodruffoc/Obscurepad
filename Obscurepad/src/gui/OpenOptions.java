@@ -9,6 +9,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import cipherTypes.CipherType;
+import cipherTypes.Plaintext;
+import pd.FileIO;
+import pd.SHA256;
+
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
@@ -17,6 +23,8 @@ import javax.swing.JPasswordField;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -41,7 +49,7 @@ public class OpenOptions extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public OpenOptions(JFrame parentFrame) {
+	public OpenOptions(MainGUI parentFrame, ArrayList<CipherType> cipherTypes, ArrayList<String> cipherModes, File selectedFile) {
 		
 		JDialog currentFrame = this;
 		addWindowListener(new WindowAdapter() {
@@ -51,38 +59,63 @@ public class OpenOptions extends JDialog {
 			}
 		});
 		setResizable(false);
-		setBounds(100, 100, 396, 196);
+		setBounds(100, 100, 262, 196);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
-		{
-			JComboBox comboBox = new JComboBox();
-			comboBox.setBounds(109, 11, 135, 22);
-			contentPanel.add(comboBox);
+		
+		
+		
+		
+		
+		JComboBox<CipherType> comboBox = new JComboBox<CipherType>();
+		comboBox.setBounds(109, 11, 135, 22);
+		
+		for (CipherType c : cipherTypes) {
+			comboBox.addItem(c);
 		}
-		{
-			textField = new JPasswordField();
-			textField.setBounds(109, 44, 135, 20);
-			contentPanel.add(textField);
-			textField.setColumns(10);
+		contentPanel.add(comboBox);
+		
+		JComboBox<String> comboBox_1 = new JComboBox<String>();
+		comboBox_1.setBounds(109, 44, 135, 22);
+		for (String s : cipherModes) {
+			comboBox_1.addItem(s);
 		}
+		contentPanel.add(comboBox_1);
+		
+		
+		
+		
+		
+		textField = new JPasswordField();
+		textField.setBounds(109, 77, 135, 20);
+		contentPanel.add(textField);
+		textField.setColumns(10);
+		
+		
+		
+		
+		
 		
 		JLabel lblEncryptionType = new JLabel("Encryption Type:");
 		lblEncryptionType.setBounds(10, 15, 89, 14);
 		contentPanel.add(lblEncryptionType);
 		
 		JLabel lblPassword = new JLabel("Password:");
-		lblPassword.setBounds(10, 47, 89, 14);
+		lblPassword.setBounds(10, 80, 89, 14);
 		contentPanel.add(lblPassword);
 		
 		JCheckBox chckbxCachePasswordFor = new JCheckBox("Cache password for this session");
-		chckbxCachePasswordFor.setBounds(10, 105, 238, 23);
+		chckbxCachePasswordFor.setEnabled(false);
+		chckbxCachePasswordFor.setBounds(6, 105, 238, 23);
 		contentPanel.add(chckbxCachePasswordFor);
 		
-		JLabel lblStrength = new JLabel("Strength:");
-		lblStrength.setBounds(254, 47, 112, 14);
-		contentPanel.add(lblStrength);
+		JLabel lblEncryptionMode = new JLabel("Encryption Mode:");
+		lblEncryptionMode.setBounds(10, 47, 103, 14);
+		contentPanel.add(lblEncryptionMode);
+		
+		
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -91,28 +124,40 @@ public class OpenOptions extends JDialog {
 				JButton okButton = new JButton("OK");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						JFileChooser f = new JFileChooser();
-						currentFrame.setVisible(false);
-						int returnValue = f.showSaveDialog(parentFrame);
-						
-						if (returnValue == JFileChooser.APPROVE_OPTION) {
-							File selectedFile = f.getSelectedFile();
-							System.out.println(selectedFile.getAbsolutePath());
+						if (!comboBox.getSelectedItem().getClass().equals(Plaintext.class)) {
+							//generate key
+							byte[] key = SHA256.hash(new String(textField.getPassword()));
+							CipherType type = (CipherType) comboBox.getSelectedItem();
+							type.setKey(key);
+							type.setCipherMode((String) comboBox_1.getSelectedItem());
+							
+							String plaintext = FileIO.readFile(selectedFile.getAbsolutePath(), type);
+							if (plaintext == null) {
+								//disable current frame
+								//display wrong password dialog
+								//enable current frame
+							} else {
+								// delete current frame
+								currentFrame.dispose();
+								parentFrame.setEnabled(true);
+								parentFrame.toFront();
+								
+								//update window with unencrypted text
+								parentFrame.updateText(plaintext);
+								//update window title
+								parentFrame.updateTitle(selectedFile.getName());
+								//update cached password if applicable
+								//parentFrame.updateCachedPassword(password);
+								System.out.println(plaintext);
+							}
+						} else {
+							// delete current frame
 							currentFrame.dispose();
 							parentFrame.setEnabled(true);
 							parentFrame.toFront();
 							
-							
-							
-							//save file
-								//
-							
-						} else {
-							currentFrame.setVisible(true);
-							parentFrame.toFront();
-							currentFrame.toFront();
-						}
-						
+							//read unencrypted
+						}						
 					}
 				});
 				okButton.setActionCommand("OK");

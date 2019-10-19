@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -26,6 +27,7 @@ import javax.swing.UIManager;
 import javax.swing.JScrollPane;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -34,22 +36,19 @@ import javax.swing.ScrollPaneConstants;
 public class MainGUI extends JFrame {
 
 	private JPanel contentPane;
+	private JTextPane textPane;
 
-//	/**
-//	 * Launch the application.
-//	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					MainGUI frame = new MainGUI();
-//					frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
+	public void updateTitle(String title) {
+		this.setTitle(title + " - Obscurepad");
+	}
+	
+	public void updateText(String text) {
+		textPane.setText(text);
+	}
+	
+	public void updateCachedPassword(String password) {
+		
+	}
 
 	/**
 	 * Create the frame.
@@ -77,8 +76,8 @@ public class MainGUI extends JFrame {
 		
 		
 		
-		JFrame currentFrame = this;
-		final JTextPane textPane = new JTextPane();
+		MainGUI currentFrame = this;
+		textPane = new JTextPane();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 662, 464);
@@ -91,14 +90,39 @@ public class MainGUI extends JFrame {
 		menuBar.add(mnFile);
 		
 		JMenuItem mntmNew = new JMenuItem("New");
+		mntmNew.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				updateTitle("Untitled");
+				updateText("");
+				updateCachedPassword("");
+			}
+		});
 		mntmNew.setAccelerator(KeyStroke.getKeyStroke('N', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
 		mnFile.add(mntmNew);
 		
 		JMenuItem mntmOpen = new JMenuItem("Open...");
 		mntmOpen.setAccelerator(KeyStroke.getKeyStroke('O', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
+		mntmOpen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser f = new JFileChooser();
+				int returnValue = f.showOpenDialog(currentFrame);
+				
+				if (returnValue == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = f.getSelectedFile();
+					System.out.println(selectedFile.getAbsolutePath());
+		
+					OpenOptions s = new OpenOptions(MainGUI.this, cipherTypes, cipherModes, selectedFile);
+					s.setLocationRelativeTo(null);
+					s.setAutoRequestFocus(true);
+					s.setVisible(true);
+					currentFrame.setEnabled(false);
+				}
+			}
+		});
 		mnFile.add(mntmOpen);
 		
 		JMenuItem mntmSave = new JMenuItem("Save");
+		mntmSave.setEnabled(false);
 		mntmSave.setAccelerator(KeyStroke.getKeyStroke('S', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
 		mnFile.add(mntmSave);
 		
@@ -130,6 +154,11 @@ public class MainGUI extends JFrame {
 		mnFile.add(separator_1);
 		
 		JMenuItem mntmExit = new JMenuItem("Exit");
+		mntmExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				currentFrame.dispose();
+			}
+		});
 		mnFile.add(mntmExit);
 		
 		JMenu mnEdit = new JMenu("Edit");
@@ -166,13 +195,16 @@ public class MainGUI extends JFrame {
 		mnEdit.add(separator_3);
 		
 		JMenuItem mntmFind = new JMenuItem("Find...");
+		mntmFind.setEnabled(false);
 		mntmFind.setAccelerator(KeyStroke.getKeyStroke('F', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
 		mnEdit.add(mntmFind);
 		
 		JMenuItem mntmFindNext = new JMenuItem("Find Next");
+		mntmFindNext.setEnabled(false);
 		mnEdit.add(mntmFindNext);
 		
 		JMenuItem mntmReplace = new JMenuItem("Replace...");
+		mntmReplace.setEnabled(false);
 		mntmReplace.setAccelerator(KeyStroke.getKeyStroke('H', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
 		mnEdit.add(mntmReplace);
 		

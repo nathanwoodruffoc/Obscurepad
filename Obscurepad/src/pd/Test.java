@@ -40,7 +40,7 @@ public class Test {
 		//FileStuff.saveFile(fileName, (CipherType) aes, new String(message));
 		
 		try {
-			String result = FileStuff.readFile(fileName, (CipherType) aes);
+			String result = FileIO.readFile(fileName, (CipherType) aes);
 			System.out.println(result);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

@@ -8,9 +8,11 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
 
+import javax.crypto.BadPaddingException;
+
 import cipherTypes.CipherType;
 
-public class FileStuff {
+public class FileIO {
 	public static void saveFile(String fileName, CipherType encMode, String plaintext) {
 		//hash the first 256bits of plaintext and prepend to plaintext
 		char[] beginning = new char[32];
@@ -65,9 +67,15 @@ public class FileStuff {
 		
 	}
 	
-	public static String readFile(String filename, CipherType encMode) throws Exception {
+	public static String readFile(String filename, CipherType encMode) {
 		File file = new File(filename);
-		byte[] fileContent = Files.readAllBytes(file.toPath());
+		byte[] fileContent = null;
+		try {
+			fileContent = Files.readAllBytes(file.toPath());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		//Get IV from file
 		byte[] iv = new byte[encMode.getIVSize()];
@@ -80,8 +88,17 @@ public class FileStuff {
 		
 		
 		//Decrypt the ciphertext
-		byte[] plainText = encMode.decrypt(cipherText);
+		byte[] plainText = null;
+		try {
+			plainText = encMode.decrypt(cipherText);
+		} catch (BadPaddingException e) {
+			return null;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//System.out.println(new String(plainText));
+
 		
 		//check if the hash of the first 32 bytes of the plaintext matches the one stored in the file
 		byte[] beginning = new byte[32];
@@ -96,6 +113,7 @@ public class FileStuff {
 			System.out.println("File hash matches");
 		} else {
 			System.out.println("File hash doesn't match");
+			return null;
 		}
 		
 		
